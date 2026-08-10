@@ -13,8 +13,8 @@ settle on a real one.)
 - **Dashboard home** — a summary tile per section (open task count,
   reminders left today, current focus timer state, active habit streaks,
   weekly stats, today's date), each linking to its full page
-- **Task board** — grouped by area (work / study / personal / side
-  project)
+- **Task board** — grouped by fully customizable areas: rename them, add
+  or remove your own, and give each one a color and emoji icon
 - **Focus timer** — 25/5/15-minute modes, can be linked to a specific
   task, browser notifications on session end, and keeps running in the
   background even if you navigate to another page
@@ -22,10 +22,20 @@ settle on a real one.)
   bars
 - **Brain dump** — a separate quick-capture list for anything that isn't
   a tagged task
-- **Habit tracker** — daily streaks with a 7-day grid per habit
+- **Habit tracker** — daily streaks with a 7-day grid per habit, a custom
+  emoji per habit, and a congratulatory toast at 3/7/30-day streak
+  milestones
 - **Weekly stats** — tasks done, focus sessions, and top area this week
-- **Mini calendar** — current month, today highlighted
+- **Calendar** — month view with prev/next navigation; click any day to save
+  an event (birthdays, holidays, etc.) with a category icon or your own
+  custom emoji, and mark it to repeat every year
 - **Dark mode** — toggle in the header, persists across reloads
+- **Completion feedback** — a brief celebratory pulse when you check off a
+  task, reminder, or habit day
+- **Settings (`/settings`)** — customize the hero title, tagline (or leave
+  it blank for a rotating daily quote), a name-based greeting, the hero
+  sparkle emoji, a theme palette (pastel/forest/ocean/sunset, layered on
+  top of light/dark), and a font pairing (typewriter/modern/handwritten)
 
 ## Tech stack
 
@@ -92,7 +102,8 @@ localStorage-backed version.
 | `/braindump`   | Brain dump / quick capture                |
 | `/habits`      | Habit tracker with streaks                |
 | `/stats`       | This week's stats                         |
-| `/calendar`    | Mini calendar                             |
+| `/calendar`    | Calendar with custom, optionally-recurring events |
+| `/settings`    | Personalization: hero, palette, fonts     |
 
 ## Project structure
 
@@ -109,8 +120,12 @@ src/
                    it keeps running while you're on a different page
   lib/
     storage.js    tiny get/set/remove wrapper around localStorage
-    areas.js      task areas + focus timer mode definitions
+    areas.js      default task areas, area color swatches, focus timer
+                   mode definitions, and getAreas() for read-only callers
     date.js       date-key / streak / week helpers
+    calendarEvents.js  calendar event categories + date-matching helpers
+    profile.js    personalization defaults (hero, palette, font) + options
+    quotes.js     rotating daily-quote pool
   App.jsx         router setup, hero, nav bar, and the state that's
                    genuinely shared across pages (tasks, focus session
                    log, the focus timer)

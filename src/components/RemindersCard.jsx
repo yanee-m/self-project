@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getItem, setItem } from '../lib/storage';
 
@@ -35,8 +35,11 @@ function computeBars() {
 export default function RemindersCard() {
   const [reminders, setReminders] = useState(() => getItem('reminders', DEFAULT_REMINDERS));
   const [input, setInput] = useState('');
+  const [poppedId, setPoppedId] = useState(null);
+  const popTimer = useRef(null);
 
   useEffect(() => { setItem('reminders', reminders); }, [reminders]);
+  useEffect(() => () => clearTimeout(popTimer.current), []);
 
   function addReminder() {
     const text = input.trim();
@@ -45,7 +48,13 @@ export default function RemindersCard() {
     setInput('');
   }
   function toggleReminder(id) {
+    const r = reminders.find(x => x.id === id);
     setReminders(prev => prev.map(r => (r.id === id ? { ...r, done: !r.done } : r)));
+    if (r && !r.done) {
+      setPoppedId(id);
+      clearTimeout(popTimer.current);
+      popTimer.current = setTimeout(() => setPoppedId(null), 600);
+    }
   }
   function removeReminder(id) {
     setReminders(prev => prev.filter(r => r.id !== id));
@@ -58,7 +67,7 @@ export default function RemindersCard() {
       <h3>daily reminders</h3>
       <div id="reminder-list">
         {reminders.map(r => (
-          <div key={r.id} className={'reminder-row' + (r.done ? ' done' : '')}>
+          <div key={r.id} className={'reminder-row' + (r.done ? ' done' : '') + (poppedId === r.id ? ' pop' : '')}>
             <input type="checkbox" checked={r.done} onChange={() => toggleReminder(r.id)} />
             <span>{r.text}</span>
             <button aria-label="remove reminder" onClick={() => removeReminder(r.id)}>×</button>

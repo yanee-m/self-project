@@ -1,29 +1,55 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getItem, setItem } from '../lib/storage';
 import { dateKey, habitStreak } from '../lib/date';
 
+const MILESTONES = [3, 7, 30];
+
 export default function Habits() {
   const [habits, setHabits] = useState(() => getItem('habits', []));
   const [input, setInput] = useState('');
+  const [icon, setIcon] = useState('');
+  const [poppedId, setPoppedId] = useState(null);
+  const [toast, setToast] = useState(null);
+  const popTimer = useRef(null);
+  const toastTimer = useRef(null);
 
   useEffect(() => { setItem('habits', habits); }, [habits]);
+  useEffect(() => () => { clearTimeout(popTimer.current); clearTimeout(toastTimer.current); }, []);
 
   function addHabit() {
     const name = input.trim();
     if (!name) return;
-    setHabits(prev => [...prev, { id: Date.now() + Math.random(), name, history: [] }]);
+    setHabits(prev => [...prev, { id: Date.now() + Math.random(), name, icon: icon.trim() || '⭐', history: [] }]);
     setInput('');
+    setIcon('');
   }
   function removeHabit(id) {
     setHabits(prev => prev.filter(h => h.id !== id));
   }
+  function showToast(msg) {
+    setToast(msg);
+    clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(null), 3200);
+  }
   function toggleToday(id, key) {
-    setHabits(prev => prev.map(h => {
-      if (h.id !== id) return h;
-      const has = h.history.includes(key);
-      return { ...h, history: has ? h.history.filter(k => k !== key) : [...h.history, key] };
-    }));
+    const habit = habits.find(h => h.id === id);
+    if (!habit) return;
+    const has = habit.history.includes(key);
+    const newHistory = has ? habit.history.filter(k => k !== key) : [...habit.history, key];
+    setHabits(prev => prev.map(h => (h.id === id ? { ...h, history: newHistory } : h)));
+
+    if (!has) {
+      setPoppedId(id);
+      clearTimeout(popTimer.current);
+      popTimer.current = setTimeout(() => setPoppedId(null), 600);
+
+      const oldStreak = habitStreak(habit.history);
+      const newStreak = habitStreak(newHistory);
+      if (newStreak > oldStreak && MILESTONES.includes(newStreak)) {
+        showToast(`🔥 ${newStreak} day streak on "${habit.name}"!`);
+      }
+    }
   }
 
   const today = new Date();
@@ -31,6 +57,7 @@ export default function Habits() {
   return (
     <div className="card" id="habits">
       <h3>habits</h3>
+      {toast && <div className="toast">{toast}</div>}
       <div id="habit-list">
         {habits.length === 0 ? (
           <div className="dump-empty">no habits yet</div>
@@ -38,8 +65,9 @@ export default function Habits() {
           habits.map(h => {
             const streak = habitStreak(h.history);
             return (
-              <div key={h.id} className="habit-row">
+              <div key={h.id} className={'habit-row' + (poppedId === h.id ? ' pop' : '')}>
                 <div className="habit-top">
+                  <span className="habit-icon">{h.icon || '⭐'}</span>
                   <span className="habit-name">{h.name}</span>
                   <span className="habit-streak">{streak > 0 ? streak + 'd streak' : ''}</span>
                   <button className="habit-del" aria-label="delete habit" onClick={() => removeHabit(h.id)}>×</button>
@@ -69,6 +97,15 @@ export default function Habits() {
         )}
       </div>
       <div className="reminder-add">
+        <input
+          type="text"
+          className="icon-input"
+          value={icon}
+          onChange={e => setIcon(e.target.value)}
+          maxLength={2}
+          placeholder="⭐"
+          aria-label="habit icon"
+        />
         <input
           type="text"
           placeholder="add a habit…"

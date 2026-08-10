@@ -9,8 +9,11 @@ import Stats from './components/Stats';
 import Calendar from './components/Calendar';
 import Page from './components/Page';
 import Dashboard from './pages/Dashboard';
+import Settings from './components/Settings';
 import { useFocusTimer } from './hooks/useFocusTimer';
 import { getItem, setItem } from './lib/storage';
+import { getProfile } from './lib/profile';
+import { dailyQuote } from './lib/quotes';
 
 const NAV_ITEMS = [
   { to: '/', label: 'dashboard', end: true },
@@ -21,12 +24,21 @@ const NAV_ITEMS = [
   { to: '/habits', label: 'habits' },
   { to: '/stats', label: 'stats' },
   { to: '/calendar', label: 'calendar' },
+  { to: '/settings', label: 'settings' },
 ];
+
+function timeGreeting() {
+  const h = new Date().getHours();
+  if (h < 12) return 'good morning';
+  if (h < 18) return 'good afternoon';
+  return 'good evening';
+}
 
 export default function App() {
   const [theme, setTheme] = useState(() => getItem('theme', 'light'));
   const [tasks, setTasks] = useState(() => getItem('tasks', []));
   const [sessionLog, setSessionLog] = useState(() => getItem('sessionLog', []));
+  const [profile, setProfile] = useState(() => getProfile());
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : 'light');
@@ -35,6 +47,11 @@ export default function App() {
 
   useEffect(() => { setItem('tasks', tasks); }, [tasks]);
   useEffect(() => { setItem('sessionLog', sessionLog); }, [sessionLog]);
+  useEffect(() => {
+    document.documentElement.setAttribute('data-palette', profile.palette);
+    document.documentElement.setAttribute('data-font', profile.font);
+    setItem('profile', profile);
+  }, [profile]);
 
   function addTask(title, area) {
     setTasks(prev => [
@@ -58,6 +75,9 @@ export default function App() {
   // lives at the App level (not the /focus route) so the timer keeps running while you're on another page
   const timer = useFocusTimer(tasks, recordFocusSession);
 
+  const tagline = profile.heroTagline.trim() || dailyQuote();
+  const heroLine = profile.userName.trim() ? `${timeGreeting()}, ${profile.userName.trim()} — ${tagline}` : tagline;
+
   return (
     <BrowserRouter>
       <div className="hero">
@@ -69,11 +89,9 @@ export default function App() {
           {theme === 'dark' ? '☀' : '☾'}
         </button>
         <div className="hero-inner">
-          <svg className="sparkle" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M20 2 C21 12 28 19 38 20 C28 21 21 28 20 38 C19 28 12 21 2 20 C12 19 19 12 20 2 Z" fill="currentColor" />
-          </svg>
-          <Link to="/" className="hero-title-link"><h1>my focus dashboard</h1></Link>
-          <p>a small corner for tasks, reminders, and deep work</p>
+          <span className="sparkle" role="img" aria-label="sparkle">{profile.sparkle}</span>
+          <Link to="/" className="hero-title-link"><h1>{profile.heroTitle || 'my focus dashboard'}</h1></Link>
+          <p>{heroLine}</p>
         </div>
       </div>
 
@@ -104,6 +122,7 @@ export default function App() {
         <Route path="/habits" element={<Page><Habits /></Page>} />
         <Route path="/stats" element={<Page><Stats tasks={tasks} sessionLog={sessionLog} /></Page>} />
         <Route path="/calendar" element={<Page><Calendar /></Page>} />
+        <Route path="/settings" element={<Page><Settings profile={profile} onChange={setProfile} /></Page>} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { AREAS } from '../lib/areas';
+import { getAreas } from '../lib/areas';
 import { startOfWeek } from '../lib/date';
 
 export default function Stats({ tasks, sessionLog }) {
@@ -7,6 +7,7 @@ export default function Stats({ tasks, sessionLog }) {
   const tasksDone = tasks.filter(t => t.done && t.doneAt && t.doneAt >= start).length;
   const sessions = sessionLog.filter(ts => ts >= start).length;
 
+  const areas = getAreas();
   const byArea = {};
   tasks.forEach(t => {
     if (t.done && t.doneAt && t.doneAt >= start) {
@@ -18,7 +19,7 @@ export default function Stats({ tasks, sessionLog }) {
   Object.keys(byArea).forEach(k => {
     if (byArea[k] > topCount) {
       topCount = byArea[k];
-      const def = AREAS.find(a => a.key === k);
+      const def = areas.find(a => a.key === k);
       topArea = def ? def.label : k;
     }
   });

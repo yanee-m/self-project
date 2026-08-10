@@ -12,6 +12,10 @@
   --mint-bg:#dcf0df;  --mint-ink:#4c8c63;
   --sun:#fbe08e;      --sun-ink:#a3791e;
 
+  /* fixed dark-surface/light-text pair for solid buttons — intentionally does NOT invert
+     in dark mode, unlike --ink, so these buttons stay legible in both themes */
+  --solid-bg:#3a352e; --solid-ink:#fff;
+
   /* palette-swappable accent roles — pastel (default) just points at the tokens above */
   --accent-bg: var(--mint-bg);  --accent-ink: var(--mint-ink);
   --accent2: var(--sun);        --accent2-ink: var(--sun-ink);
@@ -165,8 +169,8 @@ h1,h2,h3{ margin:0; font-family:var(--mono); }
 .reminder-row input[type=checkbox]{ width:15px; height:15px; accent-color: var(--accent-ink); flex:0 0 auto; }
 .reminder-row span{ flex:1; }
 .reminder-row.done span{ text-decoration:line-through; color:var(--ink-dim); }
-.reminder-row button{ opacity:0; background:none; border:none; color:var(--ink-dim); cursor:pointer; font-size:15px; }
-.reminder-row:hover button{ opacity:1; }
+.reminder-row button{ opacity:.4; background:none; border:none; color:var(--ink-dim); cursor:pointer; font-size:15px; padding:6px 8px; margin:-6px -8px; }
+.reminder-row:hover button, .reminder-row button:focus-visible{ opacity:1; }
 .reminder-add{ display:flex; gap:6px; margin-top:8px; }
 .reminder-add input{ flex:1; min-width:0; border:1px solid var(--line); border-radius:8px; padding:7px 9px; font-size:12.5px; background:var(--card-bg); color:var(--ink); }
 .reminder-add .icon-input{ flex:0 0 34px; width:34px; }
@@ -175,8 +179,8 @@ h1,h2,h3{ margin:0; font-family:var(--mono); }
 .dump-row{ display:flex; align-items:flex-start; gap:8px; padding:7px 0; font-size:13px; line-height:1.45; border-bottom:1px dashed var(--line); }
 .dump-row:last-child{ border-bottom:none; }
 .dump-row span{ flex:1; }
-.dump-row button{ opacity:0; background:none; border:none; color:var(--ink-dim); cursor:pointer; font-size:14px; flex:0 0 auto; }
-.dump-row:hover button{ opacity:1; }
+.dump-row button{ opacity:.4; background:none; border:none; color:var(--ink-dim); cursor:pointer; font-size:14px; flex:0 0 auto; padding:6px 8px; margin:-6px -8px; }
+.dump-row:hover button, .dump-row button:focus-visible{ opacity:1; }
 .dump-empty{ font-size:12.5px; color:var(--ink-dim); padding:6px 0; }
 
 .bars{ margin-top:16px; display:flex; flex-direction:column; gap:9px; }
@@ -190,7 +194,7 @@ h1,h2,h3{ margin:0; font-family:var(--mono); }
 .add-row{ display:flex; gap:8px; margin-bottom:26px; }
 .add-row input[type=text]{ flex:1; min-width:0; border:1px solid var(--line); border-radius:10px; padding:10px 13px; font-size:14px; background:var(--card-bg); color:var(--ink); }
 .add-row select{ border:1px solid var(--line); border-radius:10px; padding:10px; font-size:12.5px; color:var(--ink-dim); background:var(--card-bg); }
-.add-row button{ border:none; background:var(--ink); color:#fff; border-radius:10px; padding:10px 18px; font-weight:700; cursor:pointer; }
+.add-row button{ border:none; background:var(--solid-bg); color:var(--solid-ink); border-radius:10px; padding:10px 18px; font-weight:700; cursor:pointer; }
 
 .list-group{ margin-bottom:24px; }
 .list-title{ font-size:15px; text-transform:lowercase; margin-bottom:8px; }
@@ -235,8 +239,8 @@ h1,h2,h3{ margin:0; font-family:var(--mono); }
 .row-text{ flex:1; font-size:13.5px; cursor:pointer; }
 .row-item.done .row-text{ text-decoration:line-through; opacity:.55; }
 .row-sessions{ font-family:var(--mono); font-size:10px; color:var(--ink-dim); flex:0 0 auto; }
-.row-del{ opacity:0; border:none; background:none; cursor:pointer; color:var(--ink-dim); font-size:15px; }
-.row-item:hover .row-del{ opacity:1; }
+.row-del{ opacity:.4; border:none; background:none; cursor:pointer; color:var(--ink-dim); font-size:15px; padding:6px 8px; margin:-6px -8px; }
+.row-item:hover .row-del, .row-del:focus-visible{ opacity:1; }
 .row-empty{ padding:12px 14px; font-size:12.5px; color:var(--ink-dim); background:var(--track-bg); }
 
 /* ---------- right: calendar + focus ---------- */
@@ -261,8 +265,6 @@ h1,h2,h3{ margin:0; font-family:var(--mono); }
 .event-icon{ font-size:15px; flex:0 0 auto; }
 .event-title{ flex:1; }
 .event-repeat{ font-size:11px; color:var(--ink-dim); flex:0 0 auto; }
-.event-row .row-del{ opacity:0; }
-.event-row:hover .row-del{ opacity:1; }
 .category-picker{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; }
 .category-chip{ font-family:var(--sans); font-size:11.5px; border:1px solid var(--line); background:var(--card-bg); color:var(--ink-dim); border-radius:99px; padding:4px 10px; cursor:pointer; }
 .category-chip.active{ background:var(--accent2); color:var(--accent2-ink); border-color:var(--accent2); font-weight:700; }
@@ -294,7 +296,7 @@ h1,h2,h3{ margin:0; font-family:var(--mono); }
 
 .timer-controls{ display:flex; gap:8px; }
 .timer-controls button{ border-radius:10px; padding:9px 18px; font-weight:700; font-size:13.5px; cursor:pointer; border:none; }
-.btn-start{ background:var(--ink); color:#fff; }
+.btn-start{ background:var(--solid-bg); color:var(--solid-ink); }
 .btn-reset{ background:none; border:1px solid var(--line); color:var(--ink-dim); }
 
 .pips{ display:flex; gap:6px; }
@@ -308,8 +310,8 @@ h1,h2,h3{ margin:0; font-family:var(--mono); }
 .habit-icon{ font-size:14px; flex:0 0 auto; }
 .habit-name{ flex:1; font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; }
 .habit-streak{ font-family:var(--mono); font-size:10px; color:var(--accent2-ink); flex:0 0 auto; }
-.habit-del{ opacity:0; background:none; border:none; color:var(--ink-dim); cursor:pointer; font-size:14px; flex:0 0 auto; }
-.habit-row:hover .habit-del{ opacity:1; }
+.habit-del{ opacity:.4; background:none; border:none; color:var(--ink-dim); cursor:pointer; font-size:14px; flex:0 0 auto; padding:6px 8px; margin:-6px -8px; }
+.habit-row:hover .habit-del, .habit-del:focus-visible{ opacity:1; }
 .habit-grid{ display:flex; gap:4px; }
 .habit-day{ width:16px; height:16px; border-radius:5px; background:var(--track-bg); display:inline-block; }
 .habit-day.filled{ background:var(--accent-ink); }

@@ -1,1 +1,16 @@
-/*    /index.html   200
+# SPA fallback for client-side routes. Written as explicit routes rather
+# than a `/*` wildcard because Cloudflare Pages currently has a false-positive
+# "infinite loop" detector on wildcard rules whose target also falls under
+# the wildcard's own pattern (e.g. `/* /index.html 200`) — see
+# https://github.com/cloudflare/workers-sdk/issues/11824. It silently drops
+# the rule rather than failing the build, so direct loads/refreshes of any
+# route below would 404 without this. Add a line here whenever a new route
+# is added to NAV_ITEMS / <Routes> in src/App.jsx.
+/reminders   /index.html   200
+/tasks       /index.html   200
+/focus       /index.html   200
+/braindump   /index.html   200
+/habits      /index.html   200
+/stats       /index.html   200
+/calendar    /index.html   200
+/settings    /index.html   200

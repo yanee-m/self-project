@@ -80,9 +80,15 @@ npm run preview
 
 ## Deploying to Cloudflare Pages
 
+Connect the `yanee-m/self-project` GitHub repo in the Cloudflare dashboard
+(Workers & Pages → Create → Pages → Connect to Git) with:
+
 - Build command: `npm run build`
 - Build output directory: `dist`
-- Root directory: `my-dashboard` (if this folder isn't the repo root)
+- Root directory: `/` (default — the repo root already is this app's
+  root, there's no nested folder)
+
+Every push to `main` auto-deploys after that.
 
 `public/_redirects` (copied into `dist/` on build) routes all paths to
 `index.html` so client-side routing works on direct loads/refreshes of a

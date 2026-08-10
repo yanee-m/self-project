@@ -39,7 +39,9 @@ Since a summary tile and its full page are never mounted at the same time (diffe
 
 ### Routing and deployment
 
-`App.jsx` wraps everything in `BrowserRouter` and renders the hero + horizontal nav (`NavLink`, active-state via `isActive`) above `<Routes>`. Because this is client-side (HTML5 history) routing, direct loads of a non-root path (e.g. refreshing `/focus`) need a server-side rewrite to `index.html`. That's what `public/_redirects` (`/* /index.html 200`) provides — it's required for Cloudflare Pages and gets copied into `dist/` automatically by Vite's build.
+`App.jsx` wraps everything in `BrowserRouter` and renders the hero + horizontal nav (`NavLink`, active-state via `isActive`) above `<Routes>`. Because this is client-side (HTML5 history) routing, direct loads of a non-root path (e.g. refreshing `/focus`) need a server-side rewrite to `index.html`. That's what `public/_redirects` provides — required for Cloudflare Pages, copied into `dist/` automatically by Vite's build.
+
+`public/_redirects` lists each route explicitly (`/focus /index.html 200`, etc.) rather than using a `/*` wildcard. This is deliberate, not an oversight: Cloudflare Pages currently has a false-positive "infinite loop" validator that silently drops wildcard SPA-fallback rules like `/* /index.html 200` (see [workers-sdk#11824](https://github.com/cloudflare/workers-sdk/issues/11824)) — the build succeeds but the rule is dropped with only a warning in the deploy log, so it's easy to miss until a direct route load 404s. **When adding a new route to `NAV_ITEMS`/`<Routes>` in `App.jsx`, add a matching line to `public/_redirects`** or it will 404 on direct load/refresh.
 
 ### Styling
 
